@@ -22,4 +22,5 @@ urlpatterns = [
 
     # Profile — CBV
     path('profile/', views.ProfileView.as_view(), name='profile'),
+    path('my-reviews/', views.MyReviewListView.as_view(), name='my-reviews'),
 ]

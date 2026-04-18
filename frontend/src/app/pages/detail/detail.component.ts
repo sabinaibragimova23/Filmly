@@ -123,9 +123,11 @@ import { ReviewCardComponent } from '../../components/review-card/review-card.co
           <div class="reviews-list">
             @for (review of reviews; track review.id) {
               <app-review-card
-                [review]="review"
-                [canDelete]="review.user === auth.currentUserId()"
-                (deleted)="deleteReview($event)">
+              [review]="review"
+              [canDelete]="review.username === currentUsername"
+              (deleted)="deleteReview($event)"
+              (updated)="updateReview($event)">
+
               </app-review-card>
             }
           </div>
@@ -341,6 +343,12 @@ export class DetailComponent implements OnInit {
 
   newReview = { text: '', rating: 0 };
 
+  get currentUsername() {
+
+  return this.auth.currentUsername() || '';
+
+}
+
   get userHasReviewed() {
     return this.reviews.some(r => r.user === this.auth.currentUserId());
   }
@@ -433,4 +441,24 @@ export class DetailComponent implements OnInit {
       error: () => this.toast.error('Failed to delete review.'),
     });
   }
+
+  updateReview(event: { id: number; text: string; rating: number }) {
+  console.log('DETAIL UPDATE EVENT', event);
+
+  this.reviewService.updateReview(event.id, {
+    text: event.text,
+    rating: event.rating
+  }).subscribe({
+    next: (updatedReview) => {
+      console.log('DETAIL UPDATED REVIEW', updatedReview);
+      this.reviews = this.reviews.map(r =>
+        r.id === event.id ? updatedReview : r
+      );
+    },
+    error: (err) => {
+      console.log('DETAIL UPDATE ERROR', err);
+      this.error = 'Failed to update review.';
+    }
+  });
+}
 }

@@ -7,6 +7,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
+from rest_framework import generics, permissions
+from .models import Review
+from .serializers import ReviewSerializer
+
+
 
 from .models import Movie, Review, Favorite, UserProfile
 from .serializers import (
@@ -17,7 +22,13 @@ from .serializers import (
 
 
 # ── FBV — Auth ──────────────────────────────────────────────────────────────
+class MyReviewListView(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        return Review.objects.filter(user=self.request.user).order_by('-created_at')
+    
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
@@ -175,8 +186,14 @@ class ReviewListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ReviewDetailView(APIView):
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
+
+    serializer_class = ReviewSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Review.objects.filter(user=self.request.user)
 
     def _get_review(self, pk, user):
         try:

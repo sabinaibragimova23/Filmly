@@ -18,6 +18,7 @@ export interface Movie {
 export interface Review {
   id: number;
   movie: number;
+  movie_title?: string;
   user: number;
   username: string;
   text: string;

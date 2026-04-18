@@ -67,10 +67,11 @@ import { ReviewCardComponent } from '../../components/review-card/review-card.co
             <div class="reviews-list">
               @for (review of myReviews; track review.id) {
                 <app-review-card
-                  [review]="review"
-                  [canDelete]="true"
-                  (deleted)="deleteReview($event)">
-                </app-review-card>
+                [review]="review"
+                [canDelete]="true"
+                (deleted)="deleteReview($event)"
+                (updated)="updateReview($event)">
+              </app-review-card>
               }
             </div>
           }
@@ -189,29 +190,39 @@ export class ProfileComponent implements OnInit {
   editingBio = false;
   bioInput = '';
 
-  get username() { return this.auth.currentUsername() || ''; }
 
-  ngOnInit() {
-    this.userService.getProfile().subscribe({
-      next: p => {
-        this.profile = p;
-        this.bioInput = p.bio;
-        this.loading = false;
-        this.loadMyReviews();
-      },
-      error: () => { this.error = 'Failed to load profile.'; this.loading = false; },
-    });
-  }
+  get username() {
+  return this.auth.currentUsername() || '';
+}
 
-  loadMyReviews() {
-    // We fetch all reviews by filtering client-side from user id
-    // In a real app you'd have /api/reviews/?user=me
-    this.reviewsLoading = true;
-    // We don't have a dedicated endpoint, so we show empty for now
-    // This still demonstrates the pattern and component usage
-    this.myReviews = [];
-    this.reviewsLoading = false;
-  }
+ngOnInit() {
+  this.userService.getProfile().subscribe({
+    next: p => {
+      this.profile = p;
+      this.bioInput = p.bio || '';
+      this.loading = false;
+      this.loadMyReviews();
+    },
+    error: () => {
+      this.error = 'Failed to load profile.';
+      this.loading = false;
+    },
+  });
+}
+
+loadMyReviews() {
+  this.reviewsLoading = true;
+  this.reviewService.getMyReviews().subscribe({
+    next: reviews => {
+      this.myReviews = reviews;
+      this.reviewsLoading = false;
+    },
+    error: () => {
+      this.error = 'Failed to load your reviews.';
+      this.reviewsLoading = false;
+    }
+  });
+}
 
   saveBio() {
     this.userService.updateProfile({ bio: this.bioInput }).subscribe({
@@ -238,4 +249,19 @@ export class ProfileComponent implements OnInit {
       error: () => this.toast.error('Failed to delete review.'),
     });
   }
+
+  updateReview(event: { id: number; text: string; rating: number }) {
+  this.reviewService.updateReview(event.id, {
+    text: event.text,
+    rating: event.rating
+  }).subscribe({
+    next: (updatedReview) => {
+      this.myReviews = this.myReviews.map(r =>
+        r.id === event.id ? updatedReview : r
+      );
+      this.toast.success('Review updated.');
+    },
+    error: () => this.toast.error('Failed to update review.')
+  });
+}
 }

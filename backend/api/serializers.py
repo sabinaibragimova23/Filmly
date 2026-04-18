@@ -42,14 +42,19 @@ class MovieSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField(read_only=True)
+    movie_title = serializers.CharField(source='movie.title', read_only=True)
 
     class Meta:
         model = Review
-        fields = ['id', 'movie', 'user', 'username', 'text', 'rating', 'created_at']
+        fields = [
+            'id', 'movie', 'movie_title',
+            'user', 'username', 'text', 'rating', 'created_at'
+        ]
         read_only_fields = ['user', 'movie']
 
     def get_username(self, obj):
         return obj.user.username
+
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

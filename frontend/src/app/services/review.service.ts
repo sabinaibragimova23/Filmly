@@ -1,26 +1,32 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Review } from '../models';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class ReviewService {
-  private apiUrl = 'http://localhost:8000/api';
+  private http = inject(HttpClient);
+  private api = 'http://127.0.0.1:8000/api';
 
-  constructor(private http: HttpClient) {}
-
-  getReviews(movieId: number) {
-    return this.http.get<Review[]>(`${this.apiUrl}/movies/${movieId}/reviews/`);
+  getReviews(movieId: number): Observable<Review[]> {
+    return this.http.get<Review[]>(`${this.api}/movies/${movieId}/reviews/`);
   }
 
-  createReview(movieId: number, data: { text: string; rating: number }) {
-    return this.http.post<Review>(`${this.apiUrl}/movies/${movieId}/reviews/`, data);
+  getMyReviews(): Observable<Review[]> {
+    return this.http.get<Review[]>(`${this.api}/my-reviews/`);
   }
 
-  updateReview(reviewId: number, data: { text?: string; rating?: number }) {
-    return this.http.put<Review>(`${this.apiUrl}/reviews/${reviewId}/`, data);
+  createReview(movieId: number, data: any): Observable<Review> {
+    return this.http.post<Review>(`${this.api}/movies/${movieId}/reviews/`, data);
   }
 
-  deleteReview(reviewId: number) {
-    return this.http.delete(`${this.apiUrl}/reviews/${reviewId}/`);
+  updateReview(id: number, data: any): Observable<Review> {
+    return this.http.put<Review>(`${this.api}/reviews/${id}/`, data);
+  }
+
+  deleteReview(id: number) {
+    return this.http.delete(`${this.api}/reviews/${id}/`);
   }
 }
