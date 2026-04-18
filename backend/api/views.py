@@ -12,6 +12,7 @@ from .models import Review
 from .serializers import ReviewSerializer
 
 from groq import Groq
+import os
 
 
 
@@ -102,7 +103,7 @@ def ai_advisor_view(request):
     if not user_message:
         return Response({'error': 'Message is required'}, status=400)
     
-    client = Groq(api_key='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')
+    client = Groq(api_key=os.environ.get('GROQ_API_KEY'))
     completion = client.chat.completions.create(
         model='llama-3.1-8b-instant',
         messages=[
