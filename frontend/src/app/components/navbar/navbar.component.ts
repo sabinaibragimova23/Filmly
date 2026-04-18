@@ -18,6 +18,7 @@ import { AuthService } from '../../services/auth.service';
 
         @if (auth.isLoggedIn()) {
           <a routerLink="/favorites" routerLinkActive="active">Favorites</a>
+          <a routerLink="/advisor">AI advisor</a>
           <a routerLink="/profile" routerLinkActive="active" class="profile-link">
             <span class="avatar-dot">{{ auth.currentUsername()![0].toUpperCase() }}</span>
             {{ auth.currentUsername() }}

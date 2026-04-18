@@ -342,7 +342,7 @@ export class DetailComponent implements OnInit {
   submitting = false;
 
   newReview = { text: '', rating: 0 };
-
+  
   get currentUsername() {
 
   return this.auth.currentUsername() || '';

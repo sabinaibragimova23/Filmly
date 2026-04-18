@@ -11,6 +11,9 @@ from rest_framework import generics, permissions
 from .models import Review
 from .serializers import ReviewSerializer
 
+from groq import Groq
+
+
 
 
 from .models import Movie, Review, Favorite, UserProfile
@@ -91,6 +94,23 @@ def logout_view(request):
 def me_view(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def ai_advisor_view(request):
+    user_message = request.data.get('message', '')
+    if not user_message:
+        return Response({'error': 'Message is required'}, status=400)
+    
+    client = Groq(api_key='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')
+    completion = client.chat.completions.create(
+        model='llama-3.1-8b-instant',
+        messages=[
+            {'role': 'system', 'content': 'You are a movie expert. Recommend 2-3 films based on the user mood. Format: Title (year) — description. Be concise. Do NOT use markdown, asterisks, or any formatting symbols.'},
+            {'role': 'user', 'content': user_message}
+        ]
+    )
+    return Response({'reply': completion.choices[0].message.content})
 
 
 # ── CBV — Movies (List + Create + Retrieve + Update + Delete) ───────────────
