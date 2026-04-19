@@ -1,0 +1,311 @@
+{
+  "info": {
+    "name": "Filmly API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/register/", "host": ["{{base_url}}"], "path": ["auth", "register", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"password2\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) pm.collectionVariables.set('token', res.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/login/", "host": ["{{base_url}}"], "path": ["auth", "login", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": { "raw": "{{base_url}}/auth/me/", "host": ["{{base_url}}"], "path": ["auth", "me", ""] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": { "raw": "{{base_url}}/auth/logout/", "host": ["{{base_url}}"], "path": ["auth", "logout", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movies",
+      "item": [
+        {
+          "name": "Get All Movies",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/movies/", "host": ["{{base_url}}"], "path": ["movies", ""] }
+          }
+        },
+        {
+          "name": "Search Movies",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/movies/?search=batman",
+              "host": ["{{base_url}}"],
+              "path": ["movies", ""],
+              "query": [{ "key": "search", "value": "batman" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by Genre",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/movies/?genre=Action",
+              "host": ["{{base_url}}"],
+              "path": ["movies", ""],
+              "query": [{ "key": "genre", "value": "Action" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by Year",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/movies/?year=2008",
+              "host": ["{{base_url}}"],
+              "path": ["movies", ""],
+              "query": [{ "key": "year", "value": "2008" }]
+            }
+          }
+        },
+        {
+          "name": "Get Movie by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/movies/1/", "host": ["{{base_url}}"], "path": ["movies", "1", ""] }
+          }
+        },
+        {
+          "name": "Create Movie",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/movies/", "host": ["{{base_url}}"], "path": ["movies", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Movie\",\n  \"description\": \"A great film.\",\n  \"genre\": \"Drama\",\n  \"year\": 2024,\n  \"poster_url\": \"https://example.com/poster.jpg\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Movie",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/movies/1/", "host": ["{{base_url}}"], "path": ["movies", "1", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Movie",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": { "raw": "{{base_url}}/movies/1/", "host": ["{{base_url}}"], "path": ["movies", "1", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Get Reviews for Movie",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/movies/1/reviews/", "host": ["{{base_url}}"], "path": ["movies", "1", "reviews", ""] }
+          }
+        },
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/movies/1/reviews/", "host": ["{{base_url}}"], "path": ["movies", "1", "reviews", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Absolutely brilliant film!\",\n  \"rating\": 5\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/reviews/1/", "host": ["{{base_url}}"], "path": ["reviews", "1", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Updated review text.\",\n  \"rating\": 4\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": { "raw": "{{base_url}}/reviews/1/", "host": ["{{base_url}}"], "path": ["reviews", "1", ""] }
+          }
+        },
+        {
+          "name": "My Reviews",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": { "raw": "{{base_url}}/my-reviews/", "host": ["{{base_url}}"], "path": ["my-reviews", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Favorites",
+      "item": [
+        {
+          "name": "Get My Favorites",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": { "raw": "{{base_url}}/favorites/", "host": ["{{base_url}}"], "path": ["favorites", ""] }
+          }
+        },
+        {
+          "name": "Add to Favorites",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/favorites/", "host": ["{{base_url}}"], "path": ["favorites", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"movie\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove from Favorites",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": { "raw": "{{base_url}}/favorites/1/", "host": ["{{base_url}}"], "path": ["favorites", "1", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": { "raw": "{{base_url}}/profile/", "host": ["{{base_url}}"], "path": ["profile", ""] }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/profile/", "host": ["{{base_url}}"], "path": ["profile", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bio\": \"I love watching movies!\",\n  \"avatar_url\": \"https://example.com/avatar.jpg\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "AI Advisor",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/ai-advisor/", "host": ["{{base_url}}"], "path": ["ai-advisor", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"I want something scary for tonight\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Actor Ratings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": { "raw": "{{base_url}}/actors/my-ratings/", "host": ["{{base_url}}"], "path": ["actors", "my-ratings", ""] }
+          }
+        }
+      ]
+    }
+  ]
+}
