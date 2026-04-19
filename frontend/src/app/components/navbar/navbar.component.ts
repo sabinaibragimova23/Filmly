@@ -18,7 +18,10 @@ import { AuthService } from '../../services/auth.service';
 
         @if (auth.isLoggedIn()) {
           <a routerLink="/favorites" routerLinkActive="active">Favorites</a>
-          <a routerLink="/advisor">AI advisor</a>
+          <a routerLink="/advisor" routerLinkActive="active">AI Advisor</a>
+          <a routerLink="/actors" routerLinkActive="active">
+            <span class="actors-link">🎭 My Actors</span>
+          </a>
           <a routerLink="/profile" routerLinkActive="active" class="profile-link">
             <span class="avatar-dot">{{ auth.currentUsername()![0].toUpperCase() }}</span>
             {{ auth.currentUsername() }}
@@ -98,6 +101,7 @@ import { AuthService } from '../../services/auth.service';
     .nav-links a:hover::after { width: 100%; }
     .nav-links a.active { color: #fff; }
     .nav-links a.active::after { width: 100%; }
+    .actors-link { display: flex; align-items: center; gap: 4px; }
     .profile-link {
       display: flex;
       align-items: center;

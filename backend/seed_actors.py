@@ -1,6 +1,7 @@
 """
 Run: python seed_actors.py
 from the backend/ directory with venv activated.
+Updates actor photos to working TMDB URLs.
 """
 import os
 import django
@@ -11,44 +12,44 @@ django.setup()
 from api.models import Movie, Actor, MovieActor
 
 ACTORS_DATA = {
-    "Leonardo DiCaprio":  "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Leonardo_Dicaprio_Cannes_2019.jpg/440px-Leonardo_Dicaprio_Cannes_2019.jpg",
-    "Tom Hardy":          "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Tom_Hardy_by_Gage_Skidmore.jpg/440px-Tom_Hardy_by_Gage_Skidmore.jpg",
-    "Russell Crowe":      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Russell_Crowe_2017.jpg/440px-Russell_Crowe_2017.jpg",
-    "Keanu Reeves":       "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Keanu_Reeves_2014.jpg/440px-Keanu_Reeves_2014.jpg",
-    "Matthew McConaughey":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Matthew_McConaughey_2019.jpg/440px-Matthew_McConaughey_2019.jpg",
-    "Amy Adams":          "https://upload.wikimedia.org/wikipedia/commons/thumb/5/fifty/Amy_Adams_2014.jpg/440px-Amy_Adams_2014.jpg",
-    "Tom Hanks":          "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Tom_Hanks_TIFF_2019.jpg/440px-Tom_Hanks_TIFF_2019.jpg",
-    "Brad Pitt":          "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Brad_Pitt_2019_by_Glenn_Francis.jpg/440px-Brad_Pitt_2019_by_Glenn_Francis.jpg",
-    "Edward Norton":      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Edward_Norton_2012.jpg/440px-Edward_Norton_2012.jpg",
-    "Liam Neeson":        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Liam_Neeson_2011.jpg/440px-Liam_Neeson_2011.jpg",
-    "Henry Fonda":        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Henry_Fonda_2.jpg/440px-Henry_Fonda_2.jpg",
-    "Marlon Brando":      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Marlon_Brando_1973.jpg/440px-Marlon_Brando_1973.jpg",
-    "Al Pacino":          "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Al_Pacino.jpg/440px-Al_Pacino.jpg",
-    "John Travolta":      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/John_Travolta_2012.jpg/440px-John_Travolta_2012.jpg",
-    "Robert De Niro":     "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Robert_De_Niro_2011.jpg/440px-Robert_De_Niro_2011.jpg",
-    "Matt Damon":         "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/MattDamon2012.jpg/440px-MattDamon2012.jpg",
-    "Josh Brolin":        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Josh_Brolin_2019.jpg/440px-Josh_Brolin_2019.jpg",
-    "Song Kang-ho":       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Song_Kang-ho_2019.jpg/440px-Song_Kang-ho_2019.jpg",
-    "Jodie Foster":       "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Jodie_Foster_2016.jpg/440px-Jodie_Foster_2016.jpg",
-    "Morgan Freeman":     "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Morgan_Freeman_2018.jpg/440px-Morgan_Freeman_2018.jpg",
-    "Rosamund Pike":      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Rosamund_Pike_2019.jpg/440px-Rosamund_Pike_2019.jpg",
-    "Hugh Jackman":       "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Hugh_Jackman_2013.jpg/440px-Hugh_Jackman_2013.jpg",
-    "Jack Nicholson":     "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Jack_Nicholson_2002.jpg/440px-Jack_Nicholson_2002.jpg",
-    "Toni Collette":      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Toni_Collette_2019.jpg/440px-Toni_Collette_2019.jpg",
-    "Daniel Kaluuya":     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Daniel_Kaluuya_2019.jpg/440px-Daniel_Kaluuya_2019.jpg",
-    "Emily Blunt":        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Emily_Blunt_2013.jpg/440px-Emily_Blunt_2013.jpg",
-    "Ralph Fiennes":      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Ralph_Fiennes_2011.jpg/440px-Ralph_Fiennes_2011.jpg",
-    "Ryan Gosling":       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Ryan_Gosling_2018.jpg/440px-Ryan_Gosling_2018.jpg",
-    "Jim Carrey":         "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Jim_Carrey_2008.jpg/440px-Jim_Carrey_2008.jpg",
-    "Ethan Hawke":        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Ethan_Hawke_2018.jpg/440px-Ethan_Hawke_2018.jpg",
-    "Elijah Wood":        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Elijah_Wood_2013.jpg/440px-Elijah_Wood_2013.jpg",
-    "Harrison Ford":      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Harrison_Ford_2019.jpg/440px-Harrison_Ford_2019.jpg",
-    "Cillian Murphy":     "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Cillian_Murphy_2018.jpg/440px-Cillian_Murphy_2018.jpg",
-    "Jesse Eisenberg":    "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Jesse_Eisenberg_2015.jpg/440px-Jesse_Eisenberg_2015.jpg",
-    "Miles Teller":       "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Miles_Teller_SDCC_2014.jpg/440px-Miles_Teller_SDCC_2014.jpg",
-    "Christian Bale":     "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Christian_Bale_2019.jpg/440px-Christian_Bale_2019.jpg",
-    "Joaquin Phoenix":    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Joaquin_Phoenix_2018.jpg/440px-Joaquin_Phoenix_2018.jpg",
-    "Shameik Moore":      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Shameik_Moore_2018.jpg/440px-Shameik_Moore_2018.jpg",
+    "Leonardo DiCaprio":   "https://image.tmdb.org/t/p/w185/wo2hJpn04vbtmh0B9utCFdsQhxM.jpg",
+    "Tom Hardy":           "https://image.tmdb.org/t/p/w185/d81K0RH8UX7tZj49tZaQhZ9ewH.jpg",
+    "Russell Crowe":       "https://image.tmdb.org/t/p/w185/aAwan6FRCSI7D3d1OKLjTXtKcYm.jpg",
+    "Keanu Reeves":        "https://image.tmdb.org/t/p/w185/4D0PpNI0kmP58hgrwGC3wCjxhnm.jpg",
+    "Matthew McConaughey": "https://image.tmdb.org/t/p/w185/wJiGedOCZhwMx9DezY8uwbNxmAY.jpg",
+    "Amy Adams":           "https://image.tmdb.org/t/p/w185/oxNGOHGMDMBtKMmSfBeFAoSRnhl.jpg",
+    "Tom Hanks":           "https://image.tmdb.org/t/p/w185/xndWFsBlClOJFRdhSt4NBwiPq2o.jpg",
+    "Brad Pitt":           "https://image.tmdb.org/t/p/w185/cckcYc2v0yh1tc9QjRelptcOBko.jpg",
+    "Edward Norton":       "https://image.tmdb.org/t/p/w185/8nytsqL59SFJTVYVrN72k6qkGgJ.jpg",
+    "Liam Neeson":         "https://image.tmdb.org/t/p/w185/7ES5KDwrAFGUb08SEHA4gNnMBKy.jpg",
+    "Henry Fonda":         "https://image.tmdb.org/t/p/w185/g2GZlcoDhMHEDZ1bHXN6tSCPPH6.jpg",
+    "Marlon Brando":       "https://image.tmdb.org/t/p/w185/fuTEPMsBtV1zE98ujPONbKiYDc2.jpg",
+    "Al Pacino":           "https://image.tmdb.org/t/p/w185/fMDFeVf0pjopTJbyRSLFwNDm8Wr.jpg",
+    "John Travolta":       "https://image.tmdb.org/t/p/w185/jFswTMBZdEuIhByPmKbKdnEERpD.jpg",
+    "Robert De Niro":      "https://image.tmdb.org/t/p/w185/cT8htcckIuyI1Lqwt1CvD02ynTh.jpg",
+    "Matt Damon":          "https://image.tmdb.org/t/p/w185/3H9rnLgxbBNyUmJoHxsrLBpETAN.jpg",
+    "Josh Brolin":         "https://image.tmdb.org/t/p/w185/oLGFqAXUCy3bXPofvj2JXzfZnwt.jpg",
+    "Song Kang-ho":        "https://image.tmdb.org/t/p/w185/2Tst4UMBWeMiZpHnxRFMkJfGYMF.jpg",
+    "Jodie Foster":        "https://image.tmdb.org/t/p/w185/jFRGDNyfrFBXcWrRwBzAHNBPBTB.jpg",
+    "Morgan Freeman":      "https://image.tmdb.org/t/p/w185/oIciMBMJFkQqvX3iCFuqzUFqLgP.jpg",
+    "Rosamund Pike":       "https://image.tmdb.org/t/p/w185/wMq9kQXTeQCHUZOG4fAe5cAMVQQ.jpg",
+    "Hugh Jackman":        "https://image.tmdb.org/t/p/w185/4Xujtewxqt6aU0Y81tsS9gkjizk.jpg",
+    "Jack Nicholson":      "https://image.tmdb.org/t/p/w185/jBtbPMSDKAKEfnFfOVmlWf4LHXM.jpg",
+    "Toni Collette":       "https://image.tmdb.org/t/p/w185/7MNpDVMKmF8VoJo9ZTzDFSxKsVT.jpg",
+    "Daniel Kaluuya":      "https://image.tmdb.org/t/p/w185/qBOKWqAFBve3gEkDzEbWDaQFFSJ.jpg",
+    "Emily Blunt":         "https://image.tmdb.org/t/p/w185/bUqmEpbMkHOpZYfr1q0nmr9TzUJ.jpg",
+    "Ralph Fiennes":       "https://image.tmdb.org/t/p/w185/wHCGFJEHiNSf07l3l4Dc8gFPBiG.jpg",
+    "Ryan Gosling":        "https://image.tmdb.org/t/p/w185/lyUyVARQKhGxaxy0FSln9aFzqRa.jpg",
+    "Jim Carrey":          "https://image.tmdb.org/t/p/w185/u0aSmHGQgbNFSEFCNiHBXBvFOAl.jpg",
+    "Ethan Hawke":         "https://image.tmdb.org/t/p/w185/tQGMEDTFGdxJl4Uk2NSbdsBCGxb.jpg",
+    "Elijah Wood":         "https://image.tmdb.org/t/p/w185/9IfbNkdRHWjqArQd7K7B7BFdEdi.jpg",
+    "Harrison Ford":       "https://image.tmdb.org/t/p/w185/7CcoHCgPEszPUbxKSXRQe3ftRCe.jpg",
+    "Cillian Murphy":      "https://image.tmdb.org/t/p/w185/dm6ZMCDDUHiCiPbMuEMXTiEBvNt.jpg",
+    "Jesse Eisenberg":     "https://image.tmdb.org/t/p/w185/6MFZMoijZBM5lPzdCEg0vxWnnAz.jpg",
+    "Miles Teller":        "https://image.tmdb.org/t/p/w185/cfJCRqgWkzfyoZKkOHzQs5yyGRJ.jpg",
+    "Christian Bale":      "https://image.tmdb.org/t/p/w185/qCpZn2e3dimwbryLnqxZuI88PTi.jpg",
+    "Joaquin Phoenix":     "https://image.tmdb.org/t/p/w185/nXMzvVF6xR3OXOedozfOcoA20xh.jpg",
+    "Shameik Moore":       "https://image.tmdb.org/t/p/w185/oLDsqHXzRFiKPHBMSCVKDfXYHFv.jpg",
 }
 
 MOVIE_CAST = {
@@ -99,15 +100,17 @@ MOVIE_CAST = {
     "Whiplash":                                          ["Miles Teller"],
 }
 
-# Create actors
 actor_objs = {}
 for name, photo in ACTORS_DATA.items():
-    actor, _ = Actor.objects.get_or_create(name=name, defaults={"photo_url": photo})
+    actor, created = Actor.objects.get_or_create(name=name)
+    if actor.photo_url != photo:
+        actor.photo_url = photo
+        actor.save()
+        print(f"  📸 Updated photo: {name}")
     actor_objs[name] = actor
 
 print(f"Actors ready: {len(actor_objs)}")
 
-# Link to movies
 linked = 0
 skipped = 0
 
@@ -118,7 +121,6 @@ for title, cast in MOVIE_CAST.items():
         print(f"  ⚠ Not found: {title}")
         skipped += 1
         continue
-
     for actor_name in cast:
         actor = actor_objs.get(actor_name)
         if actor:
