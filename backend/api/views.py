@@ -76,6 +76,8 @@ def me_view(request):
     return Response(UserSerializer(request.user).data)
 
 
+from groq import Groq
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def ai_advisor_view(request):
@@ -83,33 +85,19 @@ def ai_advisor_view(request):
     if not user_message:
         return Response({'error': 'Message is required'}, status=400)
 
-    api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+    api_key = os.environ.get('GROQ_API_KEY', '')
     if not api_key:
         return Response({'error': 'AI service not configured.'}, status=503)
 
-    payload = json.dumps({
-        "model": "claude-sonnet-4-20250514",
-        "max_tokens": 512,
-        "system": (
-            "You are a movie expert assistant. Recommend 2-3 films based on the user's mood. "
-            "Format each as: Title (year) — short description. Be concise. No markdown or asterisks. "
-            "Respond in the same language the user writes in."
-        ),
-        "messages": [{"role": "user", "content": user_message}]
-    }).encode('utf-8')
-
-    req = urllib.request.Request(
-        'https://api.anthropic.com/v1/messages',
-        data=payload,
-        headers={'Content-Type': 'application/json', 'x-api-key': api_key, 'anthropic-version': '2023-06-01'},
-        method='POST',
+    client = Groq(api_key=api_key)
+    completion = client.chat.completions.create(
+        model='llama-3.1-8b-instant',
+        messages=[
+            {'role': 'system', 'content': 'You are a movie expert. Recommend 2-3 films. Format: Title (year) — description. No markdown or asterisks.'},
+            {'role': 'user', 'content': user_message}
+        ]
     )
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            data = json.loads(resp.read().decode('utf-8'))
-            return Response({'reply': data['content'][0]['text']})
-    except Exception as e:
-        return Response({'error': str(e)}, status=502)
+    return Response({'reply': completion.choices[0].message.content})
 
 
 class MovieListView(APIView):
