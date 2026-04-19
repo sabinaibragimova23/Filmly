@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.db.models import Avg
 
 
-# Custom Model Manager (requirement)
 class ReviewManager(models.Manager):
     def published(self):
         return self.filter(is_published=True)
@@ -37,23 +36,36 @@ class Movie(models.Model):
         return round(avg, 1) if avg else 0.0
 
 
+class Actor(models.Model):
+    name = models.CharField(max_length=255)
+    photo_url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class MovieActor(models.Model):
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='cast')
+    actor = models.ForeignKey(Actor, on_delete=models.CASCADE, related_name='movie_credits')
+
+    class Meta:
+        unique_together = ('movie', 'actor')
+
+    def __str__(self):
+        return f'{self.actor.name} in {self.movie.title}'
+
+
 class Review(models.Model):
     RATING_CHOICES = [(i, i) for i in range(1, 6)]
 
-    # ForeignKey relationship 1: Review → Movie
-    movie = models.ForeignKey(
-        Movie, on_delete=models.CASCADE, related_name='reviews'
-    )
-    # ForeignKey relationship 2: Review → User
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='reviews'
-    )
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
     rating = models.IntegerField(choices=RATING_CHOICES)
     is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    objects = ReviewManager()  # custom manager
+    objects = ReviewManager()
 
     class Meta:
         unique_together = ('movie', 'user')
@@ -64,12 +76,8 @@ class Review(models.Model):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='favorites'
-    )
-    movie = models.ForeignKey(
-        Movie, on_delete=models.CASCADE, related_name='favorited_by'
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='favorited_by')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -81,9 +89,7 @@ class Favorite(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name='profile'
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True, default='')
     avatar_url = models.URLField(blank=True, null=True)
 

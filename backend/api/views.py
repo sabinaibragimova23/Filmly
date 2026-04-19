@@ -11,7 +11,6 @@ from rest_framework import generics, permissions
 from .models import Review
 from .serializers import ReviewSerializer
 
-from groq import Groq
 import os
 
 
@@ -290,3 +289,85 @@ class ProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+    
+# ── FBV — Actor Ratings ─────────────────────────────────────────────────────
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def actor_ratings_view(request):
+    user = request.user
+
+    # Collect weighted signals: review rating (1-5) + favorite bonus
+    movie_scores = {}
+
+    reviews = Review.objects.filter(user=user, is_published=True).select_related('movie')
+    for review in reviews:
+        movie_scores[review.movie_id] = {
+            'score': review.rating,
+            'title': review.movie.title,
+            'genre': review.movie.genre,
+        }
+
+    favorites = Favorite.objects.filter(user=user).select_related('movie')
+    for fav in favorites:
+        mid = fav.movie_id
+        if mid in movie_scores:
+            movie_scores[mid]['score'] = min(5, movie_scores[mid]['score'] + 1)
+        else:
+            movie_scores[mid] = {
+                'score': 4,
+                'title': fav.movie.title,
+                'genre': fav.movie.genre,
+            }
+
+    if not movie_scores:
+        return Response([])
+
+    # Aggregate scores per actor
+    actor_data = defaultdict(lambda: {
+        'total': 0,
+        'count': 0,
+        'genres': defaultdict(int),
+        'movies': [],
+        'actor': None
+    })
+
+    credits = (
+        MovieActor.objects
+        .filter(movie_id__in=movie_scores.keys())
+        .select_related('actor', 'movie')
+    )
+
+    for credit in credits:
+        mid = credit.movie_id
+        aid = credit.actor_id
+        info = movie_scores[mid]
+
+        actor_data[aid]['total'] += info['score']
+        actor_data[aid]['count'] += 1
+        actor_data[aid]['genres'][info['genre']] += 1
+        actor_data[aid]['movies'].append(info['title'])
+        actor_data[aid]['actor'] = credit.actor
+
+    if not actor_data:
+        return Response([])
+
+    results = []
+    for aid, data in actor_data.items():
+        raw_avg = data['total'] / data['count']
+        percent = round((raw_avg / 5.0) * 100)
+        top_genre = max(data['genres'], key=data['genres'].get)
+        actor = data['actor']
+
+        results.append({
+            'id': aid,
+            'name': actor.name,
+            'photo_url': actor.photo_url,
+            'match_percent': percent,
+            'movies_count': data['count'],
+            'top_genre': top_genre,
+            'movies': data['movies'][:3],
+        })
+
+    results.sort(key=lambda x: x['match_percent'], reverse=True)
+    return Response(results[:20])

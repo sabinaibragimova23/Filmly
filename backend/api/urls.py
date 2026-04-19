@@ -24,4 +24,5 @@ urlpatterns = [
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('my-reviews/', views.MyReviewListView.as_view(), name='my-reviews'),
     path('ai-advisor/', views.ai_advisor_view, name='ai-advisor'),
+    path('actors/my-ratings/', views.actor_ratings_view, name='actor-ratings'),
 ]

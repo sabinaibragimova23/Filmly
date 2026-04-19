@@ -44,6 +44,13 @@ export const routes: Routes = [
   path: 'advisor',
   loadComponent: () =>
     import('./pages/advisor/advisor.component').then(m => m.AdvisorComponent),
+  },
+
+  {
+  path: 'actors',
+  loadComponent: () =>
+    import('./pages/actors/actors.component').then(m => m.ActorsComponent),
+  canActivate: [authGuard],
 },
 
   {
