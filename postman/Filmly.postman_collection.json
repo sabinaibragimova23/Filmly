@@ -17,34 +17,54 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": { "raw": "{{base_url}}/auth/register/", "host": ["{{base_url}}"], "path": ["auth", "register", ""] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"password2\": \"password123\"\n}"
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"password2\": \"password123\"\n}" }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"token\": \"9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b\",\n  \"user_id\": 3,\n  \"username\": \"testuser\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "400 Bad Request",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"username\": [\"Username already taken.\"]\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.token) pm.collectionVariables.set('token', res.token);"
-                ]
-              }
-            }
-          ],
+          "event": [{ "listen": "test", "script": { "exec": ["const res = pm.response.json();", "if (res.token) pm.collectionVariables.set('token', res.token);"] } }],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": { "raw": "{{base_url}}/auth/login/", "host": ["{{base_url}}"], "path": ["auth", "login", ""] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}"
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}" }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"token\": \"9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b\",\n  \"user_id\": 3,\n  \"username\": \"testuser\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "401 Unauthorized",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"Invalid username or password.\"\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Me",
@@ -52,7 +72,17 @@
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/auth/me/", "host": ["{{base_url}}"], "path": ["auth", "me", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 3,\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         },
         {
           "name": "Logout",
@@ -60,7 +90,17 @@
             "method": "POST",
             "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/auth/logout/", "host": ["{{base_url}}"], "path": ["auth", "logout", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Logged out.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         }
       ]
     },
@@ -72,80 +112,131 @@
           "request": {
             "method": "GET",
             "url": { "raw": "{{base_url}}/movies/", "host": ["{{base_url}}"], "path": ["movies", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"The Dark Knight\",\n    \"description\": \"When the Joker wreaks havoc on Gotham...\",\n    \"genre\": \"Action\",\n    \"year\": 2008,\n    \"poster_url\": \"https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg\",\n    \"average_rating\": 4.8,\n    \"created_at\": \"2026-04-17T14:37:00Z\"\n  },\n  {\n    \"id\": 5,\n    \"title\": \"Inception\",\n    \"description\": \"A thief who steals corporate secrets...\",\n    \"genre\": \"Sci-Fi\",\n    \"year\": 2010,\n    \"poster_url\": \"https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg\",\n    \"average_rating\": 4.9,\n    \"created_at\": \"2026-04-17T14:37:00Z\"\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         },
         {
           "name": "Search Movies",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/movies/?search=batman",
-              "host": ["{{base_url}}"],
-              "path": ["movies", ""],
-              "query": [{ "key": "search", "value": "batman" }]
+            "url": { "raw": "{{base_url}}/movies/?search=batman", "host": ["{{base_url}}"], "path": ["movies", ""], "query": [{ "key": "search", "value": "batman" }] }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"The Dark Knight\",\n    \"genre\": \"Action\",\n    \"year\": 2008,\n    \"average_rating\": 4.8\n  }\n]",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Filter by Genre",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/movies/?genre=Action",
-              "host": ["{{base_url}}"],
-              "path": ["movies", ""],
-              "query": [{ "key": "genre", "value": "Action" }]
+            "url": { "raw": "{{base_url}}/movies/?genre=Action", "host": ["{{base_url}}"], "path": ["movies", ""], "query": [{ "key": "genre", "value": "Action" }] }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"The Dark Knight\",\n    \"genre\": \"Action\",\n    \"year\": 2008,\n    \"average_rating\": 4.8\n  },\n  {\n    \"id\": 4,\n    \"title\": \"John Wick\",\n    \"genre\": \"Action\",\n    \"year\": 2014,\n    \"average_rating\": 4.5\n  }\n]",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Filter by Year",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/movies/?year=2008",
-              "host": ["{{base_url}}"],
-              "path": ["movies", ""],
-              "query": [{ "key": "year", "value": "2008" }]
+            "url": { "raw": "{{base_url}}/movies/?year=2008", "host": ["{{base_url}}"], "path": ["movies", ""], "query": [{ "key": "year", "value": "2008" }] }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"The Dark Knight\",\n    \"genre\": \"Action\",\n    \"year\": 2008,\n    \"average_rating\": 4.8\n  }\n]",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Get Movie by ID",
           "request": {
             "method": "GET",
             "url": { "raw": "{{base_url}}/movies/1/", "host": ["{{base_url}}"], "path": ["movies", "1", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"The Dark Knight\",\n  \"description\": \"When the Joker wreaks havoc on Gotham, Batman must confront one of the greatest psychological tests of his ability to fight injustice.\",\n  \"genre\": \"Action\",\n  \"year\": 2008,\n  \"poster_url\": \"https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg\",\n  \"average_rating\": 4.8,\n  \"created_at\": \"2026-04-17T14:37:00Z\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"Movie not found.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         },
         {
           "name": "Create Movie",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Token {{token}}" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/movies/", "host": ["{{base_url}}"], "path": ["movies", ""] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"New Movie\",\n  \"description\": \"A great film.\",\n  \"genre\": \"Drama\",\n  \"year\": 2024,\n  \"poster_url\": \"https://example.com/poster.jpg\"\n}"
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"New Movie\",\n  \"description\": \"A great film.\",\n  \"genre\": \"Drama\",\n  \"year\": 2024,\n  \"poster_url\": \"https://example.com/poster.jpg\"\n}" }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 46,\n  \"title\": \"New Movie\",\n  \"description\": \"A great film.\",\n  \"genre\": \"Drama\",\n  \"year\": 2024,\n  \"poster_url\": \"https://example.com/poster.jpg\",\n  \"average_rating\": 0.0,\n  \"created_at\": \"2026-04-20T10:00:00Z\"\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Update Movie",
           "request": {
             "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Token {{token}}" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/movies/1/", "host": ["{{base_url}}"], "path": ["movies", "1", ""] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Updated Title\"\n}"
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Updated Title\"\n}" }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Updated Title\",\n  \"description\": \"When the Joker wreaks havoc on Gotham...\",\n  \"genre\": \"Action\",\n  \"year\": 2008,\n  \"poster_url\": \"https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg\",\n  \"average_rating\": 4.8,\n  \"created_at\": \"2026-04-17T14:37:00Z\"\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Delete Movie",
@@ -153,7 +244,17 @@
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/movies/1/", "host": ["{{base_url}}"], "path": ["movies", "1", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": "",
+              "_postman_previewlanguage": "text"
+            }
+          ]
         }
       ]
     },
@@ -165,37 +266,63 @@
           "request": {
             "method": "GET",
             "url": { "raw": "{{base_url}}/movies/1/reviews/", "host": ["{{base_url}}"], "path": ["movies", "1", "reviews", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"movie\": 1,\n    \"movie_title\": \"The Dark Knight\",\n    \"user\": 3,\n    \"username\": \"testuser\",\n    \"text\": \"Absolutely brilliant film!\",\n    \"rating\": 5,\n    \"created_at\": \"2026-04-18T10:00:00Z\"\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         },
         {
           "name": "Create Review",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Token {{token}}" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/movies/1/reviews/", "host": ["{{base_url}}"], "path": ["movies", "1", "reviews", ""] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"text\": \"Absolutely brilliant film!\",\n  \"rating\": 5\n}"
+            "body": { "mode": "raw", "raw": "{\n  \"text\": \"Absolutely brilliant film!\",\n  \"rating\": 5\n}" }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"movie\": 1,\n  \"movie_title\": \"The Dark Knight\",\n  \"user\": 3,\n  \"username\": \"testuser\",\n  \"text\": \"Absolutely brilliant film!\",\n  \"rating\": 5,\n  \"created_at\": \"2026-04-18T10:00:00Z\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "400 Already Reviewed",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"You already reviewed this movie.\"\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Update Review",
           "request": {
             "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Token {{token}}" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/reviews/1/", "host": ["{{base_url}}"], "path": ["reviews", "1", ""] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"text\": \"Updated review text.\",\n  \"rating\": 4\n}"
+            "body": { "mode": "raw", "raw": "{\n  \"text\": \"Updated review text.\",\n  \"rating\": 4\n}" }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"movie\": 1,\n  \"movie_title\": \"The Dark Knight\",\n  \"user\": 3,\n  \"username\": \"testuser\",\n  \"text\": \"Updated review text.\",\n  \"rating\": 4,\n  \"created_at\": \"2026-04-18T10:00:00Z\"\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Delete Review",
@@ -203,7 +330,17 @@
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/reviews/1/", "host": ["{{base_url}}"], "path": ["reviews", "1", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": "",
+              "_postman_previewlanguage": "text"
+            }
+          ]
         },
         {
           "name": "My Reviews",
@@ -211,7 +348,17 @@
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/my-reviews/", "host": ["{{base_url}}"], "path": ["my-reviews", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"movie\": 1,\n    \"movie_title\": \"The Dark Knight\",\n    \"user\": 3,\n    \"username\": \"testuser\",\n    \"text\": \"Absolutely brilliant film!\",\n    \"rating\": 5,\n    \"created_at\": \"2026-04-18T10:00:00Z\"\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         }
       ]
     },
@@ -224,22 +371,44 @@
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/favorites/", "host": ["{{base_url}}"], "path": ["favorites", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"movie\": 1,\n    \"movie_details\": {\n      \"id\": 1,\n      \"title\": \"The Dark Knight\",\n      \"genre\": \"Action\",\n      \"year\": 2008,\n      \"poster_url\": \"https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg\",\n      \"average_rating\": 4.8\n    },\n    \"created_at\": \"2026-04-18T11:00:00Z\"\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         },
         {
           "name": "Add to Favorites",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Token {{token}}" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/favorites/", "host": ["{{base_url}}"], "path": ["favorites", ""] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"movie\": 1\n}"
+            "body": { "mode": "raw", "raw": "{\n  \"movie\": 1\n}" }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"movie\": 1,\n  \"movie_details\": {\n    \"id\": 1,\n    \"title\": \"The Dark Knight\",\n    \"genre\": \"Action\",\n    \"year\": 2008,\n    \"average_rating\": 4.8\n  },\n  \"created_at\": \"2026-04-18T11:00:00Z\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "400 Already in Favorites",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"Already in favorites.\"\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Remove from Favorites",
@@ -247,7 +416,17 @@
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/favorites/1/", "host": ["{{base_url}}"], "path": ["favorites", "1", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": "",
+              "_postman_previewlanguage": "text"
+            }
+          ]
         }
       ]
     },
@@ -260,22 +439,36 @@
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/profile/", "host": ["{{base_url}}"], "path": ["profile", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"user\": {\n    \"id\": 3,\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\"\n  },\n  \"bio\": \"I love watching movies!\",\n  \"avatar_url\": null\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         },
         {
           "name": "Update Profile",
           "request": {
             "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Token {{token}}" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/profile/", "host": ["{{base_url}}"], "path": ["profile", ""] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"bio\": \"I love watching movies!\",\n  \"avatar_url\": \"https://example.com/avatar.jpg\"\n}"
+            "body": { "mode": "raw", "raw": "{\n  \"bio\": \"I love watching movies!\",\n  \"avatar_url\": \"https://example.com/avatar.jpg\"\n}" }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"user\": {\n    \"id\": 3,\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\"\n  },\n  \"bio\": \"I love watching movies!\",\n  \"avatar_url\": \"https://example.com/avatar.jpg\"\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         }
       ]
     },
@@ -286,16 +479,20 @@
           "name": "AI Advisor",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Token {{token}}" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/ai-advisor/", "host": ["{{base_url}}"], "path": ["ai-advisor", ""] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"message\": \"I want something scary for tonight\"\n}"
+            "body": { "mode": "raw", "raw": "{\n  \"message\": \"I want something scary for tonight\"\n}" }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"reply\": \"Here are some great horror picks for tonight:\\n\\nHereditary (2018) — A deeply unsettling family drama that turns into pure nightmare fuel.\\n\\nThe Shining (1980) — Kubrick's masterpiece of psychological horror, unforgettable and terrifying.\\n\\nGet Out (2017) — A sharp, socially aware thriller that builds to a genuinely disturbing climax.\"\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
           "name": "Actor Ratings",
@@ -303,7 +500,17 @@
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
             "url": { "raw": "{{base_url}}/actors/my-ratings/", "host": ["{{base_url}}"], "path": ["actors", "my-ratings", ""] }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Leonardo DiCaprio\",\n    \"photo_url\": \"https://image.tmdb.org/t/p/w185/wo2hJpn04vbtmh0B9utCFdsQhxM.jpg\",\n    \"match_percent\": 99,\n    \"movies_count\": 3,\n    \"top_genre\": \"Sci-Fi\",\n    \"movies\": [\"Inception\", \"The Departed\", \"The Revenant\"]\n  },\n  {\n    \"id\": 5,\n    \"name\": \"Brad Pitt\",\n    \"photo_url\": \"https://image.tmdb.org/t/p/w185/cckcYc2v0yh1tc9QjRelptcOBko.jpg\",\n    \"match_percent\": 90,\n    \"movies_count\": 2,\n    \"top_genre\": \"Crime\",\n    \"movies\": [\"Fight Club\", \"Se7en\"]\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         }
       ]
     }
