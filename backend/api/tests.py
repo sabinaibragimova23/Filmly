@@ -245,3 +245,40 @@ class M1MovieWritePermissionTests(TestCase):
         self.assertEqual(put.status_code, 200)
         self.movie.refresh_from_db()
         self.assertEqual(self.movie.title, 'Fixed title')
+
+
+class M2SettingsFromEnvironmentTests(TestCase):
+    """Mitigation for R-02: secrets and debug flags come from the environment."""
+
+    def load_settings(self, env):
+        import importlib
+        import filmly.settings as settings_module
+        with mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch('filmly.settings.load_dotenv'):
+            module = importlib.reload(settings_module)
+            values = (module.SECRET_KEY, module.DEBUG, module.ALLOWED_HOSTS)
+        importlib.reload(settings_module)
+        return values
+
+    def test_safe_defaults_when_nothing_is_configured(self):
+        secret_key, debug, hosts = self.load_settings({})
+        self.assertFalse(debug)
+        self.assertNotIn('*', hosts)
+        self.assertFalse(secret_key.startswith('django-insecure-'))
+        self.assertGreaterEqual(len(secret_key), 50)
+
+    def test_values_are_read_from_environment(self):
+        secret_key, debug, hosts = self.load_settings({
+            'DJANGO_SECRET_KEY': 'test-only-key-' + 'x' * 40,
+            'DJANGO_DEBUG': 'True',
+            'DJANGO_ALLOWED_HOSTS': 'filmly.local,localhost',
+        })
+        self.assertEqual(secret_key, 'test-only-key-' + 'x' * 40)
+        self.assertTrue(debug)
+        self.assertEqual(hosts, ['filmly.local', 'localhost'])
+
+    def test_no_api_keys_hardcoded_in_settings(self):
+        from pathlib import Path
+        source = (Path(__file__).resolve().parent.parent / 'filmly' / 'settings.py').read_text()
+        for marker in ('sk-ant-', 'gsk_', "SECRET_KEY = '"):
+            self.assertFalse(marker in source, f'{marker!r} found in settings.py')
