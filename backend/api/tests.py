@@ -211,3 +211,37 @@ class AdvisorAdapterTests(TestCase):
         with mock.patch.dict(sys.modules, {'groq': None}):
             importlib.reload(api.views)  # must not raise ImportError
         importlib.reload(api.views)
+
+
+class M1MovieWritePermissionTests(TestCase):
+    """Mitigation for R-01: only admins may create, edit or delete movies."""
+
+    def setUp(self):
+        self.movie = make_movie('Original')
+        self.user = User.objects.create_user('alice', 'a@example.com', 'secret123')
+        self.admin = User.objects.create_user('admin', 'admin@example.com', 'secret123', is_staff=True)
+        self.client = APIClient()
+
+    def test_anonymous_cannot_edit_or_delete(self):
+        put = self.client.put(f'/api/movies/{self.movie.id}/', {'title': 'HACKED'}, format='json')
+        delete = self.client.delete(f'/api/movies/{self.movie.id}/')
+        self.assertEqual(put.status_code, 401)
+        self.assertEqual(delete.status_code, 401)
+        self.movie.refresh_from_db()
+        self.assertEqual(self.movie.title, 'Original')
+
+    def test_regular_user_cannot_create_edit_or_delete(self):
+        self.client.force_authenticate(self.user)
+        post = self.client.post('/api/movies/', {
+            'title': 'New', 'description': 'd', 'genre': 'Drama', 'year': 2024}, format='json')
+        put = self.client.put(f'/api/movies/{self.movie.id}/', {'title': 'HACKED'}, format='json')
+        delete = self.client.delete(f'/api/movies/{self.movie.id}/')
+        self.assertEqual((post.status_code, put.status_code, delete.status_code), (403, 403, 403))
+        self.assertEqual(Movie.objects.count(), 1)
+
+    def test_admin_can_still_edit(self):
+        self.client.force_authenticate(self.admin)
+        put = self.client.put(f'/api/movies/{self.movie.id}/', {'title': 'Fixed title'}, format='json')
+        self.assertEqual(put.status_code, 200)
+        self.movie.refresh_from_db()
+        self.assertEqual(self.movie.title, 'Fixed title')

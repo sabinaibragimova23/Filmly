@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
@@ -87,7 +87,9 @@ def ai_advisor_view(request):
 
 
 class MovieListView(APIView):
-    permission_classes = [AllowAny]
+    # Reading the catalog is public; creating movies is admin-only (R-01).
+    def get_permissions(self):
+        return [AllowAny()] if self.request.method == 'GET' else [IsAdminUser()]
 
     def get(self, request):
         movies = Movie.objects.all()
@@ -100,8 +102,6 @@ class MovieListView(APIView):
         return Response(MovieSerializer(movies, many=True).data)
 
     def post(self, request):
-        if not request.user.is_authenticated:
-            return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = MovieSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -110,7 +110,9 @@ class MovieListView(APIView):
 
 
 class MovieDetailView(APIView):
-    permission_classes = [AllowAny]
+    # Anyone can read a movie; editing and deleting are admin-only (R-01).
+    def get_permissions(self):
+        return [AllowAny()] if self.request.method == 'GET' else [IsAdminUser()]
 
     def _get_movie(self, pk):
         try: return Movie.objects.get(pk=pk)
