@@ -1,0 +1,8 @@
+# BEFORE the fix (new tests, old views.py)
+$ python manage.py test api.tests.M1MovieWritePermissionTests
+FAIL: test_anonymous_cannot_edit_or_delete (api.tests.M1MovieWritePermissionTests.test_anonymous_cannot_edit_or_delete)
+AssertionError: 200 != 401
+FAIL: test_regular_user_cannot_create_edit_or_delete (api.tests.M1MovieWritePermissionTests.test_regular_user_cannot_create_edit_or_delete)
+AssertionError: Tuples differ: (201, 200, 204) != (403, 403, 403)
+Ran 3 tests in 1.626s
+FAILED (failures=2)

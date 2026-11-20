@@ -1,0 +1,10 @@
+# BEFORE the fix (new tests, old settings.py)
+$ python manage.py test api.tests.M2SettingsFromEnvironmentTests
+FAIL: test_no_api_keys_hardcoded_in_settings (api.tests.M2SettingsFromEnvironmentTests.test_no_api_keys_hardcoded_in_settings)
+AssertionError: 'sk-ant-' unexpectedly found in "from pathlib import Path\nimport os\nfrom dotenv import load_dotenv\n\nBASE_DIR = Path(__file__).resolve().parent.parent\n\nload_dotenv(BASE_DIR / '.env')\n\nBASE_DIR = Path(__file__).resolve().parent.parent\n\nSECRET_KEY = 'django-insecure-****MASKED'
+FAIL: test_safe_defaults_when_nothing_is_configured (api.tests.M2SettingsFromEnvironmentTests.test_safe_defaults_when_nothing_is_configured)
+AssertionError: True is not false
+FAIL: test_values_are_read_from_environment (api.tests.M2SettingsFromEnvironmentTests.test_values_are_read_from_environment)
+AssertionError: 'django-insecure-****MASKED'
+Ran 3 tests in 0.006s
+FAILED (failures=3)

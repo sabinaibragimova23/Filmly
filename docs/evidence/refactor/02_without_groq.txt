@@ -1,0 +1,4 @@
+$ pip uninstall -y groq && python manage.py check && python manage.py test
+System check identified no issues (0 silenced).
+Ran 18 tests in 6.615s
+OK

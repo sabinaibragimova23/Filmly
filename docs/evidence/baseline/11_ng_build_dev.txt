@@ -1,0 +1,27 @@
+$ npx ng build --configuration development
+chunk-VGJFOKKN.js   | -                   |   2.32 kB | 
+styles.css          | styles              |   1.84 kB | 
+
+                    | Initial total       |   1.31 MB
+
+Lazy chunk files    | Names               |  Raw size
+chunk-TOH6TGDB.js   | -                   | 193.56 kB | 
+chunk-HLL6ET6U.js   | detail-component    |  22.35 kB | 
+chunk-QQG4HKIV.js   | actors-component    |  20.33 kB | 
+chunk-5CEVWBLE.js   | home-component      |  17.77 kB | 
+chunk-3SOWVRO2.js   | profile-component   |  15.29 kB | 
+chunk-YNOUGPZZ.js   | -                   |  12.43 kB | 
+chunk-SX6HMJ7E.js   | register-component  |   9.68 kB | 
+chunk-NO5JT75O.js   | advisor-component   |   9.04 kB | 
+chunk-YMD3SMMO.js   | -                   |   8.77 kB | 
+chunk-4RPXIXI2.js   | login-component     |   7.84 kB | 
+chunk-F75QZYOT.js   | favorites-component |   6.59 kB | 
+chunk-LDFFQD5Q.js   | -                   |   4.45 kB | 
+chunk-S4IHIKAD.js   | -                   |   1.37 kB | 
+chunk-YPRVJTLX.js   | -                   | 996 bytes | 
+
+Output location: /home/claude/work/Filmly/frontend/dist/filmly
+
+Application bundle generation complete. [6.590 seconds]
+
+exit=0

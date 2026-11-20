@@ -1,0 +1,71 @@
+diff --git a/.gitignore b/.gitignore
+index 385729a..27a4d97 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -7,4 +7,7 @@ backend/db.sqlite3
+ **/__pycache__/
+ *.pyc
+ .vscode/
+-.env
+\ No newline at end of file
++.env
++*.env
++!.env.example
++*.sqlite3
+diff --git a/backend/.env.example b/backend/.env.example
+new file mode 100644
+index 0000000..70c8ab9
+--- /dev/null
++++ b/backend/.env.example
+@@ -0,0 +1,5 @@
++# Copy to backend/.env and fill in your own values. Never commit .env.
++DJANGO_SECRET_KEY=change-me-generate-with-get_random_secret_key
++DJANGO_DEBUG=True
++DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
++GROQ_API_KEY=your-groq-api-key-here
+diff --git a/backend/filmly/settings.py b/backend/filmly/settings.py
+index d0c26fb..c4ab062 100644
+--- a/backend/filmly/settings.py
++++ b/backend/filmly/settings.py
+@@ -1,18 +1,30 @@
+ from pathlib import Path
+ import os
++import warnings
++
++from django.core.management.utils import get_random_secret_key
+ from dotenv import load_dotenv
+ 
+ BASE_DIR = Path(__file__).resolve().parent.parent
+ 
++# Secrets and environment-specific values live in backend/.env (never
++# committed). See backend/.env.example for the variable names.
+ load_dotenv(BASE_DIR / '.env')
+ 
+-BASE_DIR = Path(__file__).resolve().parent.parent
+-
+-SECRET_KEY = 'django-insecure-****MASKED'
++DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
+ 
+-DEBUG = True
++SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
++if not SECRET_KEY:
++    # No known default: a random key per process is safe but logs everyone
++    # out on restart, so set DJANGO_SECRET_KEY for anything long-lived.
++    warnings.warn('DJANGO_SECRET_KEY is not set; using a temporary random key.')
++    SECRET_KEY = get_random_secret_key()
+ 
+-ALLOWED_HOSTS = ['*']
++ALLOWED_HOSTS = [
++    host.strip()
++    for host in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
++    if host.strip()
++]
+ 
+ INSTALLED_APPS = [
+     'django.contrib.admin',
+@@ -92,4 +104,3 @@ CORS_ALLOWED_ORIGINS = [
+     'http://127.0.0.1:4200',
+ ]
+ CORS_ALLOW_CREDENTIALS = True
+-ANTHROPIC_API_KEY = 'sk-ant-...'
+\ No newline at end of file

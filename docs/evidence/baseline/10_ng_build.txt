@@ -1,0 +1,13 @@
+$ npx ng build
+- Building...
+
+Application bundle generation failed. [8.836 seconds]
+
+✘ [ERROR] Failed to inline external stylesheet 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap'. [plugin angular-css-inline-fonts-plugin]
+
+    src/styles.css:1:12:
+      1 │ @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@...
+        ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+exit=1

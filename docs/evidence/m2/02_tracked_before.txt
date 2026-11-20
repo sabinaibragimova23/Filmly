@@ -1,0 +1,17 @@
+# BEFORE: secret-like and data files tracked by git
+$ git ls-files | grep -E "\.env$|db\.sqlite3|__pycache__"
+api/__pycache__/__init__.cpython-313.pyc
+api/__pycache__/admin.cpython-313.pyc
+api/__pycache__/apps.cpython-313.pyc
+api/__pycache__/models.cpython-313.pyc
+api/__pycache__/serializers.cpython-313.pyc
+api/__pycache__/urls.cpython-313.pyc
+api/__pycache__/views.cpython-313.pyc
+api/migrations/__pycache__/0001_initial.cpython-313.pyc
+api/migrations/__pycache__/__init__.cpython-313.pyc
+db.sqlite3
+filmly/__pycache__/__init__.cpython-313.pyc
+filmly/__pycache__/settings.cpython-313.pyc
+filmly/__pycache__/urls.cpython-313.pyc
+filmly/__pycache__/wsgi.cpython-313.pyc
+qroq.env

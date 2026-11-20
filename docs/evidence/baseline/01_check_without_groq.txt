@@ -1,0 +1,9 @@
+$ pip install -r requirements.txt && python manage.py check
+Traceback (most recent call last):
+  ... (Django traceback lines omitted) ...
+  File "/home/claude/work/Filmly/backend/api/urls.py", line 2, in <module>
+    from . import views
+  File "/home/claude/work/Filmly/backend/api/views.py", line 79, in <module>
+    from groq import Groq
+ModuleNotFoundError: No module named 'groq'
+exit=1

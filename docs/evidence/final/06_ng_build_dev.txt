@@ -1,0 +1,6 @@
+$ npx ng build --configuration development
+Output location: /home/claude/work/Filmly/frontend/dist/filmly
+
+Application bundle generation complete. [6.481 seconds]
+
+exit=0

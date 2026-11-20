@@ -18,8 +18,9 @@ backend/   Django 6 + Django REST Framework, SQLite
   filmly/settings.py   settings, reads secrets from backend/.env
   api/models.py        Movie, Actor, MovieActor, Review, Favorite, UserProfile
   api/views.py         REST endpoints (auth, movies, reviews, favorites, profile, actors)
+  api/advisor.py       adapter around the Groq client (AI advisor)
   api/urls.py          routes under /api/
-  api/tests.py         acceptance tests AC-1..AC-5
+  api/tests.py         acceptance tests AC-1..AC-5 and mitigation tests
   seed.py, seed_actors.py   demo data loaders (local only)
 frontend/  Angular 17 standalone components
   src/main.ts          entry point -> src/app/app.config.ts
@@ -37,7 +38,7 @@ Auth uses DRF TokenAuthentication (`Authorization: Token <key>`).
 cd backend
 python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-# create backend/.env with GROQ_API_KEY=<your key>, never commit it
+cp .env.example .env        # then put your own values in .env, never commit it
 python manage.py migrate
 python seed.py && python seed_actors.py           # optional demo data
 python manage.py runserver                        # http://localhost:8000
@@ -65,7 +66,7 @@ internet access. Without internet use the development build above.
 ## 5. Coding conventions
 
 - Python: PEP 8, 4 spaces, snake_case. Keep views thin; put reusable logic in
-  its own module.
+  its own module (see `api/advisor.py`).
 - New endpoints need explicit `permission_classes`. Read endpoints may be
   `AllowAny`; anything that writes needs `IsAuthenticated` or `IsAdminUser`.
 - Secrets come only from environment variables (`os.environ` / `.env`).
@@ -78,13 +79,13 @@ internet access. Without internet use the development build above.
 - `python manage.py test` must pass before and after every change.
 - Acceptance criteria AC-1..AC-5 (`docs/ACCEPTANCE_CRITERIA.md`) must stay true.
 - A bug fix comes with a test that fails on the old code and passes on the new code.
-- Tests must not call the network or the real Groq API; mock it.
+- Tests must not call the network or the real Groq API; use a fake advisor (see `FakeAdvisor` in api/tests.py).
 - Report the exact command and the pass/fail totals. Never claim a test ran if it did not.
 
 ## 7. Forbidden actions
 
 - Do not read, print, create or commit secrets: `.env`, `*.env`, API keys,
-  `SECRET_KEY`, auth tokens, passwords. Use placeholders in docs.
+  `SECRET_KEY`, auth tokens, passwords. Use `.env.example` with placeholders.
 - Do not commit `db.sqlite3` or any real user data.
 - No deployments, no pushing to `main`, no force-push, no history rewrites.
 - No destructive commands: `rm -rf`, `git reset --hard`, `git clean -fd`,
