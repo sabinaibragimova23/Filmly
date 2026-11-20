@@ -10,17 +10,13 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 
+from .advisor import get_advisor
 from .models import Movie, Review, Favorite, UserProfile, Actor, MovieActor
 from .serializers import (
     LoginSerializer, RegisterSerializer,
     MovieSerializer, ReviewSerializer,
     FavoriteSerializer, UserProfileSerializer, UserSerializer,
 )
-
-import os
-import json
-import urllib.request
-import urllib.error
 
 
 class MyReviewListView(generics.ListAPIView):
@@ -76,8 +72,6 @@ def me_view(request):
     return Response(UserSerializer(request.user).data)
 
 
-from groq import Groq
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def ai_advisor_view(request):
@@ -85,19 +79,11 @@ def ai_advisor_view(request):
     if not user_message:
         return Response({'error': 'Message is required'}, status=400)
 
-    api_key = os.environ.get('GROQ_API_KEY', '')
-    if not api_key:
+    advisor = get_advisor()
+    if advisor is None:
         return Response({'error': 'AI service not configured.'}, status=503)
 
-    client = Groq(api_key=api_key)
-    completion = client.chat.completions.create(
-        model='llama-3.1-8b-instant',
-        messages=[
-            {'role': 'system', 'content': 'You are a movie expert. Recommend 2-3 films. Format: Title (year) — description. No markdown or asterisks.'},
-            {'role': 'user', 'content': user_message}
-        ]
-    )
-    return Response({'reply': completion.choices[0].message.content})
+    return Response({'reply': advisor.suggest(user_message)})
 
 
 class MovieListView(APIView):

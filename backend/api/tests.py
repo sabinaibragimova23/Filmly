@@ -3,10 +3,15 @@
 These tests describe behaviour that must stay true after every change.
 They use an in-memory test database and never call external services.
 """
+import os
+import sys
+from unittest import mock
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 
+from .advisor import GroqMovieAdvisor, get_advisor
 from .models import Favorite, Movie, Review
 
 
@@ -155,3 +160,54 @@ class AC5FavoriteTests(TestCase):
         again = self.client.post('/api/favorites/', {'movie': self.movie.id}, format='json')
         self.assertEqual(again.status_code, 400)
         self.assertEqual(Favorite.objects.count(), 1)
+
+
+class FakeAdvisor:
+    """Test double for the MovieAdvisor interface (no network)."""
+
+    def __init__(self, reply='Alien (1979) — classic sci-fi horror.'):
+        self.reply = reply
+        self.messages = []
+
+    def suggest(self, user_message):
+        self.messages.append(user_message)
+        return self.reply
+
+
+class AdvisorAdapterTests(TestCase):
+    """Task 3: the view talks to the advisor only through the adapter."""
+
+    def setUp(self):
+        self.user = User.objects.create_user('alice', 'a@example.com', 'secret123')
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    def test_view_uses_injected_advisor(self):
+        fake = FakeAdvisor()
+        with mock.patch('api.views.get_advisor', return_value=fake):
+            response = self.client.post('/api/ai-advisor/', {'message': 'scary space'}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['reply'], fake.reply)
+        self.assertEqual(fake.messages, ['scary space'])
+
+    def test_missing_key_returns_503(self):
+        with mock.patch.dict(os.environ, {'GROQ_API_KEY': ''}):
+            response = self.client.post('/api/ai-advisor/', {'message': 'comedy'}, format='json')
+        self.assertEqual(response.status_code, 503)
+
+    def test_empty_message_returns_400(self):
+        response = self.client.post('/api/ai-advisor/', {'message': '   '}, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_factory_returns_groq_adapter_when_key_set(self):
+        with mock.patch.dict(os.environ, {'GROQ_API_KEY': 'test-placeholder'}):
+            advisor = get_advisor()
+        self.assertIsInstance(advisor, GroqMovieAdvisor)
+
+    def test_api_module_imports_without_groq_installed(self):
+        # Simulate an environment where the groq package is missing.
+        import importlib
+        import api.views
+        with mock.patch.dict(sys.modules, {'groq': None}):
+            importlib.reload(api.views)  # must not raise ImportError
+        importlib.reload(api.views)
