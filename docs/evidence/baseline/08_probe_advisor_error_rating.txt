@@ -1,0 +1,13 @@
+$ python manage.py test api.test_probe_tmp   (temporary probe, removed afterwards)
+Found 2 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+
+advisor when provider raises -> 500
+.review rating=6 -> 400 {'rating': [ErrorDetail(string='"6" is not a valid choice.', code='invalid_choice')]}
+.
+----------------------------------------------------------------------
+Ran 2 tests in 0.591s
+
+OK
+Destroying test database for alias 'default'...

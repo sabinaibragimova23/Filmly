@@ -1,0 +1,8 @@
+$ python -m pyflakes api filmly
+api/admin.py:1:1: 'django.contrib.admin' imported but unused
+api/tests.py:1:1: 'django.test.TestCase' imported but unused
+api/views.py:13:1: '.models.Actor' imported but unused
+api/views.py:21:1: 'json' imported but unused
+api/views.py:23:1: 'urllib.error' imported but unused
+filmly/settings.py:2:1: 'os' imported but unused
+exit=1

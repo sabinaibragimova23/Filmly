@@ -1,0 +1,25 @@
+# AFTER the fix
+$ python manage.py test
+test_anonymous_user_can_list_movies (api.tests.AC1PublicCatalogTests.test_anonymous_user_can_list_movies) ... ok
+test_anonymous_user_can_open_movie_detail (api.tests.AC1PublicCatalogTests.test_anonymous_user_can_open_movie_detail) ... ok
+test_search_and_genre_filters (api.tests.AC1PublicCatalogTests.test_search_and_genre_filters) ... ok
+test_register_then_login (api.tests.AC2AuthTests.test_register_then_login) ... ok
+test_wrong_password_is_rejected (api.tests.AC2AuthTests.test_wrong_password_is_rejected) ... ok
+test_anonymous_user_cannot_review (api.tests.AC3ReviewTests.test_anonymous_user_cannot_review) ... ok
+test_create_review_and_average (api.tests.AC3ReviewTests.test_create_review_and_average) ... ok
+test_rating_outside_1_to_5_is_rejected (api.tests.AC3ReviewTests.test_rating_outside_1_to_5_is_rejected) ... ok
+test_second_review_by_same_user_is_rejected (api.tests.AC3ReviewTests.test_second_review_by_same_user_is_rejected) ... ok
+test_other_user_cannot_edit_or_delete (api.tests.AC4ReviewOwnershipTests.test_other_user_cannot_edit_or_delete) ... ok
+test_owner_can_edit (api.tests.AC4ReviewOwnershipTests.test_owner_can_edit) ... ok
+test_add_list_remove (api.tests.AC5FavoriteTests.test_add_list_remove) ... ok
+test_duplicate_favorite_is_rejected (api.tests.AC5FavoriteTests.test_duplicate_favorite_is_rejected) ... ok
+test_api_module_imports_without_groq_installed (api.tests.AdvisorAdapterTests.test_api_module_imports_without_groq_installed) ... ok
+test_empty_message_returns_400 (api.tests.AdvisorAdapterTests.test_empty_message_returns_400) ... ok
+test_factory_returns_groq_adapter_when_key_set (api.tests.AdvisorAdapterTests.test_factory_returns_groq_adapter_when_key_set) ... ok
+test_missing_key_returns_503 (api.tests.AdvisorAdapterTests.test_missing_key_returns_503) ... ok
+test_view_uses_injected_advisor (api.tests.AdvisorAdapterTests.test_view_uses_injected_advisor) ... ok
+test_admin_can_still_edit (api.tests.M1MovieWritePermissionTests.test_admin_can_still_edit) ... ok
+test_anonymous_cannot_edit_or_delete (api.tests.M1MovieWritePermissionTests.test_anonymous_cannot_edit_or_delete) ... ok
+test_regular_user_cannot_create_edit_or_delete (api.tests.M1MovieWritePermissionTests.test_regular_user_cannot_create_edit_or_delete) ... ok
+Ran 21 tests in 8.256s
+OK

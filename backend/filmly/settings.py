@@ -1,18 +1,30 @@
 from pathlib import Path
 import os
+import warnings
+
+from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Secrets and environment-specific values live in backend/.env (never
+# committed). See backend/.env.example for the variable names.
 load_dotenv(BASE_DIR / '.env')
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
-SECRET_KEY = 'django-insecure-filmly-secret-key-change-in-production'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
+if not SECRET_KEY:
+    # No known default: a random key per process is safe but logs everyone
+    # out on restart, so set DJANGO_SECRET_KEY for anything long-lived.
+    warnings.warn('DJANGO_SECRET_KEY is not set; using a temporary random key.')
+    SECRET_KEY = get_random_secret_key()
 
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+    if host.strip()
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -92,4 +104,3 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:4200',
 ]
 CORS_ALLOW_CREDENTIALS = True
-ANTHROPIC_API_KEY = 'sk-ant-...'
